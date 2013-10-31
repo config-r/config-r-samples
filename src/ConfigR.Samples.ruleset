@@ -1,0 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RuleSet Name="ConfigR Samples Rules" Description="ConfigR Samples Rules" ToolsVersion="11.0">
+  <Include Path="minimumrecommendedrules.ruleset" Action="Default" />
+</RuleSet>
