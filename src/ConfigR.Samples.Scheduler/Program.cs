@@ -38,14 +38,19 @@ namespace ConfigR.Samples.Scheduler
                                 LogManager.GetCurrentClassLogger().Error("Error executing schedule", ex);
                             }
 
-                            timers[schedule].Change((schedule.NextRun += schedule.RepeatInterval) - DateTime.Now, TimeSpan.FromMilliseconds(-1));
+                            timers[schedule].Change(((schedule.NextRun += schedule.RepeatInterval) - DateTime.Now).OrNow(), TimeSpan.FromMilliseconds(-1));
                         },
                         null,
-                        schedule.NextRun - DateTime.Now,
+                        (schedule.NextRun - DateTime.Now).OrNow(),
                         TimeSpan.FromMilliseconds(-1))));
 
                 s.WhenStopped(schedules => timers.Values.ToList().ForEach(timer => timer.Dispose()));
             }));
+        }
+
+        private static TimeSpan OrNow(this TimeSpan timeSpan)
+        {
+            return timeSpan.TotalMilliseconds < 0 ? new TimeSpan(0) : timeSpan;
         }
     }
 }
