@@ -17,12 +17,12 @@ namespace ConfigR.Samples.WebApplication
             // On the other hand, if you are *not* loading any specific config and you only want Web.csx to be loaded,
             // you don't need to call any Load...() methods, ConfigR will do the loading for you as usual.
             // In that case, this entire class could be removed from this sample.
-            Configurator
-                .LoadLocal()
+            Config.Global
+                .LoadLocalScriptFile()
 #if DEBUG
-                .Load("Web.Debug.csx");
+                .LoadScriptFile("Web.Debug.csx");
 #else
-                .Load("Web.Release.csx");
+                .LoadScriptFile("Web.Release.csx");
 #endif
         }
     }

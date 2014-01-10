@@ -18,8 +18,8 @@ namespace ConfigR.Samples.WindowsService
             HostFactory.Run(x => x.Service<string>(o =>
             {
                 o.ConstructUsing(n => n);
-                o.WhenStarted(n => log.Info(Configurator.Get<string>("greeting")));
-                o.WhenStopped(n => log.Info(Configurator.Get<string>("valediction")));
+                o.WhenStarted(n => log.Info(Config.Global.Get<string>("greeting")));
+                o.WhenStopped(n => log.Info(Config.Global.Get<string>("valediction")));
             }));
         }
     }

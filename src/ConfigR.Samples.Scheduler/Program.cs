@@ -21,7 +21,7 @@ namespace ConfigR.Samples.Scheduler
             // * initialization/schedule execution overlapping with next dueTime - currently an exception would be thrown due to negative dueTime
             HostFactory.Run(h => h.Service<Schedule[]>(s =>
             {
-                s.ConstructUsing(() => Configurator.Get<Schedule[]>("Schedules"));
+                s.ConstructUsing(() => Config.Global.Get<Schedule[]>("Schedules"));
 
                 Dictionary<Schedule, Timer> timers = null;
                 s.WhenStarted(schedules => timers = schedules.ToDictionary(
