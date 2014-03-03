@@ -1,7 +1,7 @@
 require 'albacore'
 require 'fileutils'
 
-nuget_command = "src/packages/NuGet.CommandLine.2.7.1/tools/NuGet.exe"
+nuget_command = "src/packages/NuGet.CommandLine.2.8.0/tools/NuGet.exe"
 solution = "src/ConfigR.Samples.sln"
 
 Albacore.configure do |config|
