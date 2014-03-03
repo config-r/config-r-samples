@@ -9,7 +9,6 @@ namespace ConfigR.Samples.ConsoleApplication
     using Common.Logging;
     using Common.Logging.Simple;
     using ConfigR;
-    using ServiceStack.Text;
 
     public static class Program
     {
@@ -54,7 +53,7 @@ namespace ConfigR.Samples.ConsoleApplication
 
             // your configuration script can also use types declared in your application
             Config.Global.LoadScriptFile("Custom4.csx");
-            Console.WriteLine("Foo: {0}", Config.Global.Get<Foo>().ToJsv());
+            Console.WriteLine("Foo.Bar: {0}", Config.Global.Get<Foo>().Bar);
 
             // reset to original state for the samples below
             Config.Global.Unload();
