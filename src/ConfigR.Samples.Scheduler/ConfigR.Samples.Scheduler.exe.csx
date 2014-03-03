@@ -1,6 +1,8 @@
 ﻿#r "ConfigR.Samples.Scheduler.exe"
+#r "Common.Logging.Core.dll"
 
 using System;
+using Common.Logging;
 using ConfigR.Samples.Scheduler;
 
 Add(
@@ -11,7 +13,7 @@ Add(
         {
             Action = () =>
                 {
-                    Console.WriteLine("{0}: The 1st schedule is sending some emails!", DateTime.Now.ToString("o"));
+                    LogManager.GetCurrentClassLogger().Info("The 1st schedule is sending some emails!");
                     // send some emails
                 },
             NextRun = DateTime.Now.AddSeconds(2),
@@ -21,7 +23,7 @@ Add(
         {
             Action = () =>
                 {
-                    Console.WriteLine("{0}: The 2nd schedule is downloading some reports!", DateTime.Now.ToString("o"));
+                    LogManager.GetCurrentClassLogger().Info("The 2nd schedule is downloading some reports!");
                     // download some reports
                 },
             NextRun = DateTime.Now.AddSeconds(3),
@@ -31,7 +33,7 @@ Add(
         {
             Action = () =>
                 {
-                    Console.WriteLine("{0}: The 3rd schedule is performing some housekeeping!", DateTime.Now.ToString("o"));
+                    LogManager.GetCurrentClassLogger().Info("The 3rd schedule is performing some housekeeping!");
                     // perform some housekeeping
                 },
             NextRun = DateTime.Now.AddSeconds(4),
