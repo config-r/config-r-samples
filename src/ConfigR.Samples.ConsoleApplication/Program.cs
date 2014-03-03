@@ -14,7 +14,7 @@ namespace ConfigR.Samples.ConsoleApplication
     {
         public static void Main(string[] args)
         {
-            LogManager.Adapter = new ConsoleOutLoggerFactoryAdapter(LogLevel.Debug, false, true, true, null);
+            LogManager.Adapter = new ConsoleOutLoggerFactoryAdapter(LogLevel.Info, false, true, true, null);
 
             // you can retreive settings as their underlying type
             var count = Config.Global.Get<int>("Count");
