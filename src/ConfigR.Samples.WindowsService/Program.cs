@@ -2,25 +2,46 @@
 //  Copyright (c) ConfigR contributors. (configr.net@gmail.com)
 // </copyright>
 
+using System.ServiceProcess;
+
 namespace ConfigR.Samples.WindowsService
 {
     using System;
     using Common.Logging;
     using ConfigR;
-    using Topshelf;
 
-    public static class Program
+    class Program : ServiceBase
     {
-        public static void Main(string[] args)
+        static void Main()
         {
-            var log = LogManager.GetCurrentClassLogger();
-            AppDomain.CurrentDomain.UnhandledException += (sender, e) => log.Fatal((Exception)e.ExceptionObject);
-            HostFactory.Run(x => x.Service<string>(o =>
+            using (var service = new Program())
             {
-                o.ConstructUsing(n => n);
-                o.WhenStarted(n => log.Info(Config.Global.Get<string>("greeting")));
-                o.WhenStopped(n => log.Info(Config.Global.Get<string>("valediction")));
-            }));
+                // so we can run interactive from Visual Studio or as a service
+                if (Environment.UserInteractive)
+                {
+                    service.OnStart(null);
+                    Console.WriteLine("\r\nPress enter key to stop program\r\n");
+                    Console.ReadLine();
+                    service.OnStop();
+                    return;
+                }
+                Run(service);
+            }
         }
+
+        ILog log;
+
+        protected override void OnStart(string[] args)
+        {
+            log = LogManager.GetCurrentClassLogger();
+            AppDomain.CurrentDomain.UnhandledException += (sender, e) => log.Fatal((Exception)e.ExceptionObject);
+            log.Info(Config.Global.Get<string>("greeting"));
+        }
+
+        protected override void OnStop()
+        {
+            log.Info(Config.Global.Get<string>("valediction"));
+        }
+
     }
 }

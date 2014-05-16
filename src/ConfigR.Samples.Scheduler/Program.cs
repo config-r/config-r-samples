@@ -2,6 +2,8 @@
 //  Copyright (c) ConfigR contributors. (configr.net@gmail.com)
 // </copyright>
 
+using System.ServiceProcess;
+
 namespace ConfigR.Samples.Scheduler
 {
     using System;
@@ -10,47 +12,61 @@ namespace ConfigR.Samples.Scheduler
     using System.Threading;
     using Common.Logging;
     using ConfigR;
-    using Topshelf;
 
-    public static class Program
+    class Program : ServiceBase
     {
-        public static void Main(string[] args)
+        public static void Main()
         {
-            // NOTE (Adam): I purposely ommitted some stuff which ought to be in here to avoid cluttering the sample, including:
+            using (var service = new Program())
+            {
+                // so we can run interactive from Visual Studio or as a service
+                if (Environment.UserInteractive)
+                {
+                    service.OnStart(null);
+                    Console.WriteLine("\r\nPress enter key to stop program\r\n");
+                    Console.ReadLine();
+                    service.OnStop();
+                    return;
+                }
+                Run(service);
+            }
+        }
+
+
+        Dictionary<Schedule, Timer> timers;
+
+        protected override void OnStart(string[] args)
+        {   
+            // NOTE (Adam): I purposely omitted some stuff which ought to be in here to avoid cluttering the sample, including:
             // * thread safety between schedule execution and timer disposal
             // * initialization/schedule execution overlapping with next dueTime - currently an exception would be thrown due to negative dueTime
-            HostFactory.Run(h => h.Service<Schedule[]>(s =>
-            {
-                s.ConstructUsing(() => Config.Global.Get<Schedule[]>("Schedules"));
+            var schedules = Config.Global.Get<Schedule[]>("Schedules");
 
-                Dictionary<Schedule, Timer> timers = null;
-                s.WhenStarted(schedules => timers = schedules.ToDictionary(
-                    schedule => schedule,
-                    schedule => new Timer(
-                        state =>
+            timers = schedules.ToDictionary(
+                schedule => schedule,
+                schedule => new Timer(
+                    state =>
+                    {
+                        try
                         {
-                            try
-                            {
-                                schedule.Action();
-                            }
-                            catch (Exception ex)
-                            {
-                                LogManager.GetCurrentClassLogger().Error("Error executing schedule", ex);
-                            }
+                            schedule.Action();
+                        }
+                        catch (Exception ex)
+                        {
+                            LogManager.GetCurrentClassLogger().Error("Error executing schedule", ex);
+                        }
 
-                            timers[schedule].Change(((schedule.NextRun += schedule.RepeatInterval) - DateTime.Now).OrNow(), TimeSpan.FromMilliseconds(-1));
-                        },
-                        null,
-                        (schedule.NextRun - DateTime.Now).OrNow(),
-                        TimeSpan.FromMilliseconds(-1))));
-
-                s.WhenStopped(schedules => timers.Values.ToList().ForEach(timer => timer.Dispose()));
-            }));
+                        timers[schedule].Change(((schedule.NextRun += schedule.RepeatInterval) - DateTime.Now).OrNow(), TimeSpan.FromMilliseconds(-1));
+                    },
+                    null,
+                    (schedule.NextRun - DateTime.Now).OrNow(),
+                    TimeSpan.FromMilliseconds(-1)));
         }
 
-        private static TimeSpan OrNow(this TimeSpan timeSpan)
+        protected override void OnStop()
         {
-            return timeSpan.TotalMilliseconds < 0 ? new TimeSpan(0) : timeSpan;
+            timers.Values.ToList().ForEach(timer => timer.Dispose());
         }
+
     }
 }
