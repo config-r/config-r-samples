@@ -42,7 +42,6 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <StyleCopTreatErrorsAsWarnings>false</StyleCopTreatErrorsAsWarnings>
     <CodeAnalysisRuleSet>..\ConfigR.Samples.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
