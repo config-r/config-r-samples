@@ -23,7 +23,7 @@ namespace ConfigR.Samples.WebApplication
                 var greeting = string.Format(
                     CultureInfo.InvariantCulture,
                     "{0}, I'm built for {1}!",
-                    Config.Global.Get<string>("greeting"),
+                    Config.Global.Get<Greeting>("greeting").Text,
                     Config.Global.Get<string>("builtfor"));
 
                 var model = new { Greeting = greeting };
