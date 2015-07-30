@@ -1,5 +1,5 @@
 ﻿#r "ConfigR.Samples.Scheduler.exe"
-#r "Common.Logging.Core.dll"
+#r "Common.Logging.dll"
 
 using System;
 using Common.Logging;
