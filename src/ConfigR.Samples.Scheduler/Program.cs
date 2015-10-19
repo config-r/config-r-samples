@@ -8,8 +8,8 @@ namespace ConfigR.Samples.Scheduler
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
-    using Common.Logging;
     using ConfigR;
+    using NLog;
     using Topshelf;
 
     public static class Program
@@ -35,7 +35,7 @@ namespace ConfigR.Samples.Scheduler
                             }
                             catch (Exception ex)
                             {
-                                LogManager.GetCurrentClassLogger().Error("Error executing schedule", ex);
+                                LogManager.GetCurrentClassLogger().Error(ex, "Error executing schedule");
                             }
 
                             timers[schedule].Change(((schedule.NextRun += schedule.RepeatInterval) - DateTime.Now).OrNow(), TimeSpan.FromMilliseconds(-1));

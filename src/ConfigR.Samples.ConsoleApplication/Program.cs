@@ -6,16 +6,12 @@ namespace ConfigR.Samples.ConsoleApplication
 {
     using System;
     using System.IO;
-    using Common.Logging;
-    using Common.Logging.Simple;
     using ConfigR;
 
     public static class Program
     {
         public static void Main(string[] args)
         {
-            LogManager.Adapter = new ConsoleOutLoggerFactoryAdapter(LogLevel.Info, false, true, true, null);
-
             // you can retreive settings as their underlying type
             var count = Config.Global.Get<int>("Count");
             var uri = Config.Global.Get<Uri>("Uri");
