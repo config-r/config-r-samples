@@ -4,13 +4,6 @@ obj
 *.suo
 *.user
 
-/src/packages/*
-!/src/packages/NuGet.CommandLine.*
-/src/packages/NuGet.CommandLine.*/*
-/src/packages/NuGet.CommandLine.*/*.*
-!/src/packages/NuGet.CommandLine.*/tools
-/src/packages/NuGet.CommandLine.*/tools/*
-/src/packages/NuGet.CommandLine.*/tools/*.*
-!/src/packages/NuGet.CommandLine.*/tools/NuGet.exe
+/src/packages
 
 *.sln.ide
