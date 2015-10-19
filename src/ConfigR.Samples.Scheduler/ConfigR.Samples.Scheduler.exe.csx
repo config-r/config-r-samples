@@ -1,9 +1,9 @@
 ﻿#r "ConfigR.Samples.Scheduler.exe"
-#r "Common.Logging.dll"
+#r "NLog.dll"
 
 using System;
-using Common.Logging;
 using ConfigR.Samples.Scheduler;
+using NLog;
 
 Add(
     "Schedules",

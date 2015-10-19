@@ -8,8 +8,8 @@ namespace ConfigR.Samples.Scheduler
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
-    using Common.Logging;
     using ConfigR;
+    using NLog;
     using Topshelf;
 
     public static class Program

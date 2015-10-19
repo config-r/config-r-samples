@@ -5,8 +5,8 @@
 namespace ConfigR.Samples.WindowsService
 {
     using System;
-    using Common.Logging;
     using ConfigR;
+    using NLog;
     using Topshelf;
 
     public static class Program
