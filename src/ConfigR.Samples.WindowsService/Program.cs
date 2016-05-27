@@ -7,20 +7,30 @@ namespace ConfigR.Samples.WindowsService
     using System;
     using ConfigR;
     using NLog;
+    using NLog.Config;
+    using NLog.Targets;
     using Topshelf;
 
     public static class Program
     {
         public static void Main(string[] args)
         {
-            var log = LogManager.GetCurrentClassLogger();
-            AppDomain.CurrentDomain.UnhandledException += (sender, e) => log.Fatal((Exception)e.ExceptionObject);
-            HostFactory.Run(x => x.Service<string>(o =>
+            using (var target = new ColoredConsoleTarget())
             {
-                o.ConstructUsing(n => n);
-                o.WhenStarted(n => log.Info(Config.Global.Get<string>("greeting")));
-                o.WhenStopped(n => log.Info(Config.Global.Get<string>("valediction")));
-            }));
+                var loggingConfig = new LoggingConfiguration();
+                loggingConfig.AddTarget("console", target);
+                loggingConfig.LoggingRules.Add(new LoggingRule("*", NLog.LogLevel.Trace, target));
+                LogManager.Configuration = loggingConfig;
+
+                var log = LogManager.GetCurrentClassLogger();
+                AppDomain.CurrentDomain.UnhandledException += (sender, e) => log.Fatal((Exception)e.ExceptionObject);
+                HostFactory.Run(x => x.Service<string>(o =>
+                {
+                    o.ConstructUsing(n => n);
+                    o.WhenStarted(n => log.Info(Config.Global.Get<string>("greeting")));
+                    o.WhenStopped(n => log.Info(Config.Global.Get<string>("valediction")));
+                }));
+            }
         }
     }
 }

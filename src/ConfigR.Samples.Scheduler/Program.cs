@@ -10,42 +10,52 @@ namespace ConfigR.Samples.Scheduler
     using System.Threading;
     using ConfigR;
     using NLog;
+    using NLog.Config;
+    using NLog.Targets;
     using Topshelf;
 
     public static class Program
     {
         public static void Main(string[] args)
         {
-            // NOTE (Adam): I purposely ommitted some stuff which ought to be in here to avoid cluttering the sample, including:
-            // * thread safety between schedule execution and timer disposal
-            // * initialization/schedule execution overlapping with next dueTime - currently an exception would be thrown due to negative dueTime
-            HostFactory.Run(h => h.Service<Schedule[]>(s =>
+            using (var target = new ColoredConsoleTarget())
             {
-                s.ConstructUsing(() => Config.Global.Get<Schedule[]>("Schedules"));
+                var loggingConfig = new LoggingConfiguration();
+                loggingConfig.AddTarget("console", target);
+                loggingConfig.LoggingRules.Add(new LoggingRule("*", NLog.LogLevel.Trace, target));
+                LogManager.Configuration = loggingConfig;
 
-                Dictionary<Schedule, Timer> timers = null;
-                s.WhenStarted(schedules => timers = schedules.ToDictionary(
-                    schedule => schedule,
-                    schedule => new Timer(
-                        state =>
-                        {
-                            try
+                // NOTE (Adam): I purposely ommitted some stuff which ought to be in here to avoid cluttering the sample, including:
+                // * thread safety between schedule execution and timer disposal
+                // * initialization/schedule execution overlapping with next dueTime - currently an exception would be thrown due to negative dueTime
+                HostFactory.Run(h => h.Service<Schedule[]>(s =>
+                {
+                    s.ConstructUsing(() => Config.Global.Get<Schedule[]>("Schedules"));
+
+                    Dictionary<Schedule, Timer> timers = null;
+                    s.WhenStarted(schedules => timers = schedules.ToDictionary(
+                        schedule => schedule,
+                        schedule => new Timer(
+                            state =>
                             {
-                                schedule.Action();
-                            }
-                            catch (Exception ex)
-                            {
-                                LogManager.GetCurrentClassLogger().Error(ex, "Error executing schedule");
-                            }
+                                try
+                                {
+                                    schedule.Action();
+                                }
+                                catch (Exception ex)
+                                {
+                                    LogManager.GetCurrentClassLogger().Error(ex, "Error executing schedule");
+                                }
 
-                            timers[schedule].Change(((schedule.NextRun += schedule.RepeatInterval) - DateTime.Now).OrNow(), TimeSpan.FromMilliseconds(-1));
-                        },
-                        null,
-                        (schedule.NextRun - DateTime.Now).OrNow(),
-                        TimeSpan.FromMilliseconds(-1))));
+                                timers[schedule].Change(((schedule.NextRun += schedule.RepeatInterval) - DateTime.Now).OrNow(), TimeSpan.FromMilliseconds(-1));
+                            },
+                            null,
+                            (schedule.NextRun - DateTime.Now).OrNow(),
+                            TimeSpan.FromMilliseconds(-1))));
 
-                s.WhenStopped(schedules => timers.Values.ToList().ForEach(timer => timer.Dispose()));
-            }));
+                    s.WhenStopped(schedules => timers.Values.ToList().ForEach(timer => timer.Dispose()));
+                }));
+            }
         }
 
         private static TimeSpan OrNow(this TimeSpan timeSpan)
